@@ -53,6 +53,11 @@ def check_permissions(permission, payload):
             'code':'invalid_claims',
             'description':'permission not included in jwt.'
         },400)
+    if permission not in payload['permissions']:
+        raise AuthError({
+            'code':'unauthorized'.
+            'description':'permission not found'
+        })
     return True
 
 '''
