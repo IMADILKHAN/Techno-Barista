@@ -17,15 +17,6 @@ class AuthError(Exception):
 
 
 ## Auth Header
-
-'''
-@TODO implement get_token_auth_header() method
-    it should attempt to get the header from the request
-        it should raise an AuthError if no header is present
-    it should attempt to split bearer and the token
-        it should raise an AuthError if the header is malformed
-    return the token part of the header
-'''
 def get_token_auth_header():
     auth = request.headers.get('Authorization',None)
     if not auth:
@@ -53,7 +44,7 @@ def get_token_auth_header():
         },401)
 
     token = parts[1]
-    
+
     return token
 '''
 @TODO implement check_permissions(permission, payload) method
@@ -67,7 +58,12 @@ def get_token_auth_header():
     return true otherwise
 '''
 def check_permissions(permission, payload):
-    raise Exception('Not Implemented')
+    if 'permissions' not in payload:
+        raise AuthError({
+            'code':'invalid_claims',
+            'description':'permission not included in jwt.'
+        },400)
+    return True
 
 '''
 @TODO implement verify_decode_jwt(token) method
