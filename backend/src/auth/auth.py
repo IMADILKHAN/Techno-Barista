@@ -39,7 +39,7 @@ def get_token_auth_header():
         },401)
     elif len(parts) >2:
         raise AuthError({
-            'code':'invalid_header'.
+            'code':'invalid_header',
             'description':'Authorization header must be bearer token'
         },401)
 
@@ -97,6 +97,28 @@ def verify_decode_jwt(token):
                 audience=API_AUDIENCE,
                 issuer='https://' + AUTH0_DOMAIN + '/'
             )
+
+            return payload
+
+        except jwt.ExpiredSignatureError:
+            raise AuthError({
+            'code':'token_Expired',
+            'description':'token_Expired'
+            },401)
+        except jwt.JWTClaimsError:
+            raise AuthError({
+                'code': 'invalid_claims',
+                'description': 'Incorrect claims. Please, check the audience and issuer.'
+            }, 401)
+        except Exception:
+            raise AuthError({
+                'code': 'invalid_header',
+                'description': 'Unable to parse authentication token.'
+            }, 400)
+    raise AuthError({
+                'code': 'invalid_header',
+                'description': 'Unable to find the appropriate key.'
+            }, 400)
 
 '''
 @TODO implement @requires_auth(permission) decorator method
