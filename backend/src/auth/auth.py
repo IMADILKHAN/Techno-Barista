@@ -5,9 +5,9 @@ from jose import jwt
 from urllib.request import urlopen
 
 
-AUTH0_DOMAIN = 'cofee.auth0.com'
+AUTH0_DOMAIN = 'project321.auth0.com'
 ALGORITHMS = ['RS256']
-API_AUDIENCE = 'cofee'
+API_AUDIENCE = 'coffee'
 
 ## AuthError Exception
 class AuthError(Exception):
@@ -55,7 +55,7 @@ def check_permissions(permission, payload):
         },400)
     if permission not in payload['permissions']:
         raise AuthError({
-            'code':'unauthorized'.
+            'code':'unauthorized',
             'description':'permission not found'
         })
     return True
@@ -112,16 +112,7 @@ def verify_decode_jwt(token):
                 'description': 'Unable to find the appropriate key.'
             }, 400)
 
-'''
-@TODO implement @requires_auth(permission) decorator method
-    @INPUTS
-        permission: string permission (i.e. 'post:drink')
 
-    it should use the get_token_auth_header method to get the token
-    it should use the verify_decode_jwt method to decode the jwt
-    it should use the check_permissions method validate claims and check the requested permission
-    return the decorator which passes the decoded payload to the decorated method
-'''
 def requires_auth(permission=''):
     def requires_auth_decorator(f):
         @wraps(f)

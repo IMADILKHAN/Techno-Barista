@@ -11,22 +11,17 @@ app = Flask(__name__)
 setup_db(app)
 CORS(app)
 
-'''
-@TODO uncomment the following line to initialize the datbase
-!! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
-!! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
-'''
-# db_drop_and_create_all()
+db_drop_and_create_all()
 
 ## ROUTES
-'''
-@TODO implement endpoint
-    GET /drinks
-        it should be a public endpoint
-        it should contain only the drink.short() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
-'''
+@app.route('/drinks',methods=['GET'])
+def show_drinks():
+    drinks = list(map(Drink.short, Drink.query.all()))
+    return jsonify({
+        'sucess':True,
+        'drinks':drinks
+    })
+
 
 
 '''
@@ -37,7 +32,14 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
-
+@app.route('/drinks-detail')
+@requires_auth('get:drinks-detail')
+def show_drinks_detail():
+    drinks = list(map(Drink.long,Drink.query.all()))
+    return jsonify({
+        'sucess':True,
+        'drinks':drinks
+    })
 
 '''
 @TODO implement endpoint
