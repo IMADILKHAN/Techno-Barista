@@ -11,45 +11,54 @@ app = Flask(__name__)
 setup_db(app)
 CORS(app)
 
+
 db_drop_and_create_all()
 
-## ROUTES
-# shows drinks
-@app.route('/drinks',methods=['GET'])
-def show_drinks():
+
+# ROUTES
+# get drinks
+@app.route("/drinks")
+def get_drinks():
     drinks = list(map(Drink.short, Drink.query.all()))
-    return jsonify({
-        'sucess':True,
-        'drinks':drinks
-    })
+    result = {
+        "success": True,
+        "drinks": drinks
+    }
+    return jsonify(result)
 
 
-# shows the drinks in detail
-@app.route('/drinks-detail',methods=['GET'])
+# get full details of the drinks
+@app.route('/drinks-detail')
 @requires_auth('get:drinks-detail')
-def show_drinks_detail(token):
-    drinks = list(map(Drink.long,Drink.query.all()))
-    return jsonify({
-        'sucess':True,
-        'drinks':drinks
-    })
+def get_drinks_detail(token):
+    drinks = list(map(Drink.long, Drink.query.all()))
+    result = {
+        "success": True,
+        "drinks": drinks
+    }
+    return jsonify(result)
 
-@app.route('/drinks',methods=['POST'])
-@requires_auth('post:drinks')
+
+# post a new drink
+@app.route("/drinks", methods=['POST'])
+@requires_auth("post:drinks")
 def add_drinks(token):
     if request.data:
         new_drink_data = json.loads(request.data.decode('utf-8'))
-        new_drink = Drink(title = new_drink_data['title'], recipe = json.dumps(new_drink_data['recipe']))
+        new_drink = Drink(title=new_drink_data['title'], recipe=json.dumps(new_drink_data['recipe']))
         Drink.insert(new_drink)
-        drinks = list(map(Drink.long , Drink.query.all()))
-        result = jsonify({
-            'sucess':True,
-            'drinks':drinks
-        })
+        drinks = list(map(Drink.long, Drink.query.all()))
+        result = {
+            "success": True,
+            "drinks": drinks
+        }
+        return jsonify(result)
 
-@app.route('/drinks/<int:drink_id>',methods=['PATCH'])
-@app.requires_auth('patch:drinks')
-def patch_Drinks(token,drink_id):
+
+# edit drinks by id
+@app.route("/drinks/<drink_id>", methods=['PATCH'])
+@requires_auth("patch:drinks")
+def patch_drinks(token, drink_id):
     new_drink_data = json.loads(request.data.decode('utf-8'))
     drink_data = Drink.query.get(drink_id)
     if 'title' in new_drink_data:
@@ -57,42 +66,50 @@ def patch_Drinks(token,drink_id):
     if 'recipe' in new_drink_data:
         setattr(drink_data, 'recipe', new_drink_data['recipe'])
     Drink.update(drink_data)
-    drinks = list(map(Drink.long , Drink.query.all()))
-    retur jsonify({
-        'sucess':True,
-        'drinks':drinks
-    })
+    drinks = list(map(Drink.long, Drink.query.all()))
+    result = {
+        "success": True,
+        "drinks": drinks
+    }
+    return jsonify(result)
 
 
-@app.route('/drinks/<int:drink_id>' , methods=['DELETE'])
-@requires_auth('delete:drinks')
-def delete_Drinks(token,drink_id):
-    drink = Drink.query.get(drink_id)
-    Drink.delete(drink)
-    drinks = list(map(Drink.long , Drink.query.all()))
-
-    return jsonify({
-        "sucess":True,
-        "drinks":drinks
-    })
+# delete drink by id 
+@app.route("/drinks/<drink_id>", methods=['DELETE'])
+@requires_auth("delete:drinks")
+def delete_drinks(token, drink_id):
+    drink_data = Drink.query.get(drink_id)
+    Drink.delete(drink_data)
+    drinks = list(map(Drink.long, Drink.query.all()))
+    result = {
+        "success": True,
+        "drinks": drinks
+    }
+    return jsonify(result)
 
 
 ## Error Handling
+
 @app.errorhandler(422)
 def unprocessable(error):
-    return jsonify({
-                    "success": False,
-                    "error": 422,
-                    "message": "unprocessable"
-                    }), 422
+    error_data = {
+        "success": False,
+        "error": 422,
+        "message": "unprocessable"
+    }
+    return jsonify(error_data), 422
+
+
 
 @app.errorhandler(404)
-def resource_not_found(error):
-    return jsonify({
-        "sucess":False,
-        "error":404,
-        "message":"resource not found"
-    }) , 404
+def not_found(error):
+    error_data = {
+        "success": False,
+        "error": 404,
+        "message": "resource not found"
+    }
+    return jsonify(error_data), 404
+
 
 @app.errorhandler(AuthError)
 def auth_error(e):
