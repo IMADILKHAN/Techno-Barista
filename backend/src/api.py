@@ -14,6 +14,7 @@ CORS(app)
 db_drop_and_create_all()
 
 ## ROUTES
+# shows drinks
 @app.route('/drinks',methods=['GET'])
 def show_drinks():
     drinks = list(map(Drink.short, Drink.query.all()))
@@ -23,35 +24,28 @@ def show_drinks():
     })
 
 
-
-'''
-@TODO implement endpoint
-    GET /drinks-detail
-        it should require the 'get:drinks-detail' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
-'''
-@app.route('/drinks-detail')
+# shows the drinks in detail
+@app.route('/drinks-detail',methods=['GET'])
 @requires_auth('get:drinks-detail')
-def show_drinks_detail():
+def show_drinks_detail(token):
     drinks = list(map(Drink.long,Drink.query.all()))
     return jsonify({
         'sucess':True,
         'drinks':drinks
     })
 
-'''
-@TODO implement endpoint
-    POST /drinks
-        it should create a new row in the drinks table
-        it should require the 'post:drinks' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
-        or appropriate status code indicating reason for failure
-'''
-
-
+@app.route('/drinks',methods=['POST'])
+@requires_auth('post:drinks')
+def add_drinks(token):
+    if request.data:
+        new_drink_data = json.loads(request.data.decode('utf-8'))
+        new_drink = Drink(title = new_drink_data['title'], recipe = json.dumps(new_drink_data['recipe']))
+        Drink.insert(new_drink)
+        drinks = list(map(Drink.long , Drink.query.all()))
+        result = jsonify({
+            'sucess':True,
+            'drinks':drinks
+        })
 '''
 @TODO implement endpoint
     PATCH /drinks/<id>
@@ -63,6 +57,21 @@ def show_drinks_detail():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:drink_id>',methods=['PATCH'])
+@app.requires_auth('patch:drinks')
+def patch_Drinks(token,drink_id):
+    new_drink_data = json.loads(request.data.decode('utf-8'))
+    drink_data = Drink.query.get(drink_id)
+    if 'title' in new_drink_data:
+        setattr(drink_data, 'title', new_drink_data['title'])
+    if 'recipe' in new_drink_data:
+        setattr(drink_data, 'recipe', new_drink_data['recipe'])
+    Drink.update(drink_data)
+    drinks = list(map(Drink.long , Drink.query.all()))
+    retur jsonify({
+        'sucess':True,
+        'drinks':drinks
+    })
 
 
 '''
@@ -75,8 +84,17 @@ def show_drinks_detail():
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:drink_id>' , methods=['DELETE'])
+@requires_auth('delete:drinks')
+def delete_Drinks(token,drink_id):
+    drink = Drink.query.get(drink_id)
+    Drink.delete(drink)
+    drinks = list(map(Drink.long , Drink.query.all()))
 
-
+    return jsonify({
+        "sucess":True,
+        "drinks":drinks
+    })
 ## Error Handling
 '''
 Example error handling for unprocessable entity
