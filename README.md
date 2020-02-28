@@ -16,9 +16,5 @@ You have been called on to demonstrate your newly learned skills to create a ful
 
 We started the full stack application for you. It is desiged with some key functional areas:
 
-### Backend
 
-The `./backend` directory contains a partially completed Flask server with a pre-written SQLAlchemy module to simplify your data needs. You will need to complete the required endpoints, configure, and integrate Auth0 for authentication.
-
-[View the README.md within ./backend for more details.](./backend/README.md)
 
