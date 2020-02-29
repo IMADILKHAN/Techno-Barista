@@ -7,9 +7,6 @@ Udacity has decided to open a new digitally enabled cafe for students to order d
 
 
 
-## About the Stack
-
-
 
 
 
