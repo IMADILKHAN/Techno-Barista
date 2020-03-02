@@ -10,6 +10,8 @@ This digital coffe shop is  Role-Based-Access-Control OR [RBAC]
 * **Flask-Migrate** 
 * **HTML**, **CSS**, and **Javascript** with [Bootstrap 3]
 
+### Authorization
+For authorization I have used Auth0
 
 
 
