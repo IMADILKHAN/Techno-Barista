@@ -45,4 +45,4 @@ To start and run the local development server,
   $ python3 app.py
   ```
 
-4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
+4. Navigate to Home page [http://localhost:5000](http://localhost:5000):
