@@ -2,7 +2,7 @@ Techno Barista
 -----
 Techno Barista is a new digitally enabled cafe for people to order drinks, socialize, and study hard. 
 Permission Based Acess Control or [PBAC] archticeture is used to provide additional functionalities to the users.
-There are 3 roles pre-defined of Manager ,Barista and customer.
+There are 3 roles pre-defined of Manager, Barista and customer.
 
 ### Tech Stack
 * **Python3** and **Flask** 
